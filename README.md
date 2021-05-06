@@ -8,14 +8,23 @@ PictureInPicture support
 npm install react-native-cs-pip-module
 ```
 
+```sh
+yarn add react-native-cs-pip-module
+```
+
 ## Usage
 
 ```js
 import CsPipModule from "react-native-cs-pip-module";
 
+### PiP availability (iOS + Android)
 // ...
+const result = CsPipModule.isPiPSupported();
+```
 
-const result = await CsPipModule.multiply(3, 7);
+### PiP run (Android only)
+// ...
+const result = CsPipModule.enterPiPMode();
 ```
 
 ## Contributing
