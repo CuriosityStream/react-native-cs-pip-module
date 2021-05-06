@@ -7,5 +7,5 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface PiPSupportModule : NSObject <RCTBridgeModule>
+@interface CsPiPModule : NSObject <RCTBridgeModule>
 @end
