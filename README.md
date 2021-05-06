@@ -14,16 +14,15 @@ yarn add react-native-cs-pip-module
 
 ## Usage
 
+### PiP availability (iOS + Android)
 ```js
 import CsPipModule from "react-native-cs-pip-module";
-
-### PiP availability (iOS + Android)
 // ...
 const result = CsPipModule.isPiPSupported();
 ```
 
 ### PiP run (Android only)
-// ...
+```js
 const result = CsPipModule.enterPiPMode();
 ```
 
