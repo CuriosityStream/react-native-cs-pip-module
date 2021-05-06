@@ -10,7 +10,7 @@
 #import "CsPipModule.h"
 #import <AVKit/AVKit.h>
 
-@implementation CsPiPModule
+@implementation CsPipModule
 
 RCT_EXPORT_MODULE();
 
