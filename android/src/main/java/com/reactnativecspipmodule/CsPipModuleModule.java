@@ -10,6 +10,9 @@ import com.facebook.react.module.annotations.ReactModule;
 import android.os.Build;
 import android.app.PictureInPictureParams;
 import android.util.Rational;
+import android.app.AppOpsManager;
+import android.content.Context;
+import android.os.Process;
 
 @ReactModule(name = CsPipModuleModule.NAME)
 public class CsPipModuleModule extends ReactContextBaseJavaModule {
@@ -37,12 +40,21 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void enterPiPMode() {
         if (isPipSupported) {
-            if (isCustomAspectRatioSupported) {
-                PictureInPictureParams params = new PictureInPictureParams.Builder()
-                        .setAspectRatio(this.aspectRatio).build();
-                getCurrentActivity().enterPictureInPictureMode(params);
-            } else
-                getCurrentActivity().enterPictureInPictureMode();
+            AppOpsManager manager = (AppOpsManager) reactContext.getSystemService(Context.APP_OPS_SERVICE);
+            if (manager != null) {
+                int modeAllowed = manager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(),
+                        reactContext.getPackageName());
+
+                if (modeAllowed == AppOpsManager.MODE_ALLOWED) {
+                    if (isCustomAspectRatioSupported) {
+                        PictureInPictureParams params = new PictureInPictureParams.Builder()
+                                .setAspectRatio(this.aspectRatio).build();
+                        getCurrentActivity().enterPictureInPictureMode(params);
+                    } else {
+                        getCurrentActivity().enterPictureInPictureMode();
+                    }
+                }
+            }
         }
     }
 
