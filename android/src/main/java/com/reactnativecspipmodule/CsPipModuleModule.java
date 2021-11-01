@@ -13,6 +13,8 @@ import android.util.Rational;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.os.Process;
+import android.content.pm.PackageManager;
+
 
 @ReactModule(name = CsPipModuleModule.NAME)
 public class CsPipModuleModule extends ReactContextBaseJavaModule {
@@ -21,6 +23,7 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private boolean isPipSupported = false;
     private boolean isCustomAspectRatioSupported = false;
+    private boolean hasFeature = false;
     private Rational aspectRatio;
     private static final int ASPECT_WIDTH = 16;
     private static final int ASPECT_HEIGHT = 9;
@@ -28,6 +31,8 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
     public CsPipModuleModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        final PackageManager pm = reactContext.getPackageManager();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             isPipSupported = true;
         }
@@ -35,11 +40,14 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
             isCustomAspectRatioSupported = true;
             aspectRatio = new Rational(ASPECT_WIDTH, ASPECT_HEIGHT);
         }
+        if(pm.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+          hasFeature = true;
+        }
     }
 
     @ReactMethod
     public void enterPiPMode() {
-        if (isPipSupported) {
+        if (isPipSupported && hasFeature) {
             AppOpsManager manager = (AppOpsManager) reactContext.getSystemService(Context.APP_OPS_SERVICE);
             if (manager != null) {
                 int modeAllowed = manager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(),
@@ -49,7 +57,12 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
                     if (isCustomAspectRatioSupported) {
                         PictureInPictureParams params = new PictureInPictureParams.Builder()
                                 .setAspectRatio(this.aspectRatio).build();
-                        getCurrentActivity().enterPictureInPictureMode(params);
+                        try {
+                            getCurrentActivity().enterPictureInPictureMode(params);
+                        }
+                        catch(Exception e) {
+
+                        }
                     } else {
                         getCurrentActivity().enterPictureInPictureMode();
                     }
@@ -67,7 +80,7 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isPiPSupported(Promise promise) {
         try{
-            promise.resolve(isPipSupported);
+            promise.resolve(isPipSupported && hasFeature);
         }catch (Exception e){
             promise.reject("Can not detect PiP support", e);
         }
