@@ -46,26 +46,26 @@ public class CsPipModuleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void enterPiPMode() {
+   public void enterPiPMode() {
         if (isPipSupported && hasFeature) {
             AppOpsManager manager = (AppOpsManager) reactContext.getSystemService(Context.APP_OPS_SERVICE);
             if (manager != null) {
                 int modeAllowed = manager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(),
                         reactContext.getPackageName());
-
                 if (modeAllowed == AppOpsManager.MODE_ALLOWED) {
-                    if (isCustomAspectRatioSupported) {
-                        PictureInPictureParams params = new PictureInPictureParams.Builder()
-                                .setAspectRatio(this.aspectRatio).build();
-                        try {
-                            getCurrentActivity().enterPictureInPictureMode(params);
-                        }
-                        catch(Exception e) {
-
-                        }
-                    } else {
-                        getCurrentActivity().enterPictureInPictureMode();
+                  try {
+                    final Activity activity = getCurrentActivity();
+                    if (activity == null) {
+                      return;
                     }
+                    if (isCustomAspectRatioSupported) {
+                      PictureInPictureParams params = new PictureInPictureParams.Builder()
+                        .setAspectRatio(this.aspectRatio).build();
+                      activity.enterPictureInPictureMode(params);
+                    } else {
+                      activity.enterPictureInPictureMode();
+                    }
+                  }  catch (Exception e) {}
                 }
             }
         }
