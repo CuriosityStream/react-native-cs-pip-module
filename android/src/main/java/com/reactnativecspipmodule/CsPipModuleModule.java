@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
+
+import android.app.Activity;
 import android.os.Build;
 import android.app.PictureInPictureParams;
 import android.util.Rational;
